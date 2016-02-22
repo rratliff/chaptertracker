@@ -22,6 +22,14 @@ public class Book {
 		this.chapterCount = chapterCount;
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -50,6 +58,5 @@ public class Book {
 	public String toString() {
 		return String.format("Book [id=%s, name=%s, sequence=%s, chapterCount=%s]", id, name, sequence, chapterCount);
 	}
-	
 
 }
