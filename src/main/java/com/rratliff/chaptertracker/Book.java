@@ -1,9 +1,12 @@
 package com.rratliff.chaptertracker;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Book {
@@ -13,6 +16,8 @@ public class Book {
 	private String name;
 	private int sequence;
 	private int chapterCount;
+	@OneToMany
+	private List<ReadingRecord> readingRecords;
 	
 	protected Book() {}
 	
@@ -52,6 +57,14 @@ public class Book {
 
 	public void setChapterCount(int chapterCount) {
 		this.chapterCount = chapterCount;
+	}
+
+	public List<ReadingRecord> getReadingRecords() {
+		return readingRecords;
+	}
+
+	public void setReadingRecords(List<ReadingRecord> readingRecords) {
+		this.readingRecords = readingRecords;
 	}
 
 	@Override
