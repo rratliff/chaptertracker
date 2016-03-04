@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(App.class)
+@ActiveProfiles({ "test" })
 @WebIntegrationTest({ "server.port=8888" })
 public class BookControllerIT {
 
@@ -107,6 +110,18 @@ public class BookControllerIT {
 		assertNotNull(apiResponse);
 		Integer status = (Integer) apiResponse.get("status");
 		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
+	}
+
+	@Test
+	public void testGetBooks_returnsList() throws Exception {
+		Book book = new Book("Leviticus", 27, 3);
+		bookRepository.save(book);
+
+		@SuppressWarnings("unchecked")
+		List<Book> apiResponse = restTemplate.getForObject("http://localhost:8888/book", List.class);
+
+		assertNotNull(apiResponse);
+		assertEquals(1, apiResponse.size());
 	}
 
 }
