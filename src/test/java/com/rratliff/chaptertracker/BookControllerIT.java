@@ -2,6 +2,7 @@ package com.rratliff.chaptertracker;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -122,6 +123,43 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		assertEquals(1, apiResponse.size());
+
+		// Clean up
+		bookRepository.delete(book);
+	}
+
+	@Test
+	public void testGetBooks_excludesReadingRecords() throws Exception {
+		Book book = new Book("Leviticus", 27, 3);
+		bookRepository.save(book);
+
+		@SuppressWarnings("unchecked")
+		List<HashMap<String, Object>> apiResponse = restTemplate.getForObject("http://localhost:8888/book", List.class);
+
+		assertNotNull(apiResponse);
+		assertEquals(1, apiResponse.size());
+		HashMap<String, Object> responseBook = apiResponse.get(0);
+		assertEquals(book.getName(), responseBook.get("name"));
+		assertNull(responseBook.get("readingRecords"));
+
+		// Clean up
+		bookRepository.delete(book);
+	}
+
+	@Test
+	public void testGetBookDetail_includesReadingRecords() throws Exception {
+		Book book = new Book("Leviticus", 27, 3);
+		bookRepository.save(book);
+
+		Map<String, String> params = new HashMap<>();
+		params.put("id", Long.toString(book.getId()));
+
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> apiResponse = restTemplate.getForObject("http://localhost:8888/book/{id}",
+				HashMap.class, params);
+
+		assertNotNull(apiResponse);
+		assertNotNull(apiResponse.get("readingRecords"));
 
 		// Clean up
 		bookRepository.delete(book);

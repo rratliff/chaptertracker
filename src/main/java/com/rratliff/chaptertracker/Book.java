@@ -3,7 +3,6 @@ package com.rratliff.chaptertracker;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,21 +11,27 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Entity
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonView(View.Summary.class)
 	private long id;
 
 	@NotEmpty
+	@JsonView(View.Summary.class)
 	private String name;
 
+	@JsonView(View.Summary.class)
 	private int sequence;
 
 	@Min(1)
+	@JsonView(View.Summary.class)
 	private int chapterCount;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany
 	private List<ReadingRecord> readingRecords;
 
 	protected Book() {

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @RestController
 @RequestMapping("/book")
 public class BookController {
@@ -34,6 +36,7 @@ public class BookController {
 		return bookRepository.findOne(bookId);
 	}
 
+	@JsonView(View.Summary.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public Iterable<Book> getBooks() {
 		return bookRepository.findAll();
