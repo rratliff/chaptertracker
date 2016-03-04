@@ -5,25 +5,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="/book/{bookId}/readingRecord")
+@RequestMapping(value = "/book/{bookId}/readingRecord")
 public class ReadingRecordController {
-	
+
 	@Autowired
 	ReadingRecordRepository readingRecordRepository;
-	
+
 	@Autowired
 	BookRepository bookRepository;
-	
+
 	@RequestMapping(method = RequestMethod.POST)
-	public Map<String, Object> createReadingRecord(@RequestBody Map<String, Object> readingRecordMap) {
+	public Map<String, Object> createReadingRecord(@PathVariable("bookId") Long bookId,
+			@RequestBody Map<String, Object> readingRecordMap) {
 		// book
-		Book book = bookRepository.findOne(Long.parseLong(readingRecordMap.get("bookId").toString()));
+		Book book = bookRepository.findOne(bookId);
 		// date
 		Date recordDate = new Date();
 		ReadingRecord readingRecord = new ReadingRecord(book, recordDate, //

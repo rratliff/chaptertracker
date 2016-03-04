@@ -3,24 +3,29 @@ package com.rratliff.chaptertracker;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 public class Book {
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+	@NotEmpty
 	private String name;
 	private int sequence;
 	private int chapterCount;
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY)
 	private List<ReadingRecord> readingRecords;
-	
-	protected Book() {}
-	
+
+	protected Book() {
+	}
+
 	public Book(String name, int sequence, int chapterCount) {
 		this.name = name;
 		this.sequence = sequence;
