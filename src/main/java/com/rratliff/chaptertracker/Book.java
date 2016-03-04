@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -16,10 +17,15 @@ public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+
 	@NotEmpty
 	private String name;
+
 	private int sequence;
+
+	@Min(1)
 	private int chapterCount;
+
 	@OneToMany(fetch = FetchType.LAZY)
 	private List<ReadingRecord> readingRecords;
 

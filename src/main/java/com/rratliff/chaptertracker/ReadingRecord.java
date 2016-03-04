@@ -7,21 +7,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class ReadingRecord {
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
+
 	@ManyToOne
+	@NotNull
 	private Book book;
-	
+
+	@NotNull
 	private Date date;
+
+	@Min(1)
 	private int chapterNumber;
-	
-	protected ReadingRecord() {}
-	
+
+	protected ReadingRecord() {
+	}
+
 	public ReadingRecord(Book book, Date date, int chapterNumber) {
 		this.book = book;
 		this.date = date;
