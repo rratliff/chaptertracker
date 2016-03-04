@@ -122,6 +122,9 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		assertEquals(1, apiResponse.size());
+
+		// Clean up
+		bookRepository.delete(book);
 	}
 
 }
