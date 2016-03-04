@@ -15,6 +15,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
@@ -66,6 +67,44 @@ public class BookControllerIT {
 		// succeeded
 		Book bookFromDb = bookRepository.findOne(bookId.longValue());
 		assertEquals("Book 1", bookFromDb.getName());
+	}
+
+	@Test
+	public void testCreateBook_withMissingName_returnsBadRequest() throws Exception {
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>("", requestHeaders);
+
+		@SuppressWarnings("unchecked")
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/book", httpEntity,
+				Map.class);
+
+		assertNotNull(apiResponse);
+		Integer status = (Integer) apiResponse.get("status");
+		assertEquals(status.intValue(), HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	public void testCreateBook_withNegativeChapterCount_returnsBadRequest() throws Exception {
+		// Building the Request body data
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("name", "Book 1");
+		requestBody.put("chapterCount", -1);
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		// Invoking the API
+		@SuppressWarnings("unchecked")
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/book", httpEntity,
+				Map.class, Collections.emptyMap());
+
+		assertNotNull(apiResponse);
+		Integer status = (Integer) apiResponse.get("status");
+		assertEquals(status.intValue(), HttpStatus.BAD_REQUEST.value());
 	}
 
 }
