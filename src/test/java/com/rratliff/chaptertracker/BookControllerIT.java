@@ -67,6 +67,8 @@ public class BookControllerIT {
 		// succeeded
 		Book bookFromDb = bookRepository.findOne(bookId.longValue());
 		assertEquals("Book 1", bookFromDb.getName());
+
+		bookRepository.delete(bookId.longValue());
 	}
 
 	@Test
@@ -81,7 +83,7 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		Integer status = (Integer) apiResponse.get("status");
-		assertEquals(status.intValue(), HttpStatus.BAD_REQUEST.value());
+		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
 	}
 
 	@Test
@@ -104,7 +106,7 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		Integer status = (Integer) apiResponse.get("status");
-		assertEquals(status.intValue(), HttpStatus.BAD_REQUEST.value());
+		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
 	}
 
 }
