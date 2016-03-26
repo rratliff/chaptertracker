@@ -31,12 +31,13 @@ public class BookController {
 		return response;
 	}
 
+	@JsonView(View.BookDetail.class)
 	@RequestMapping(method = RequestMethod.GET, value = "/{bookId}")
 	public Book getBookDetails(@PathVariable("bookId") Long bookId) {
 		return bookRepository.findOne(bookId);
 	}
 
-	@JsonView(View.Summary.class)
+	@JsonView(View.BookSummary.class)
 	@RequestMapping(method = RequestMethod.GET)
 	public Iterable<Book> getBooks() {
 		return bookRepository.findAll();

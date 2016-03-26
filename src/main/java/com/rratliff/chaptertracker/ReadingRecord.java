@@ -2,28 +2,37 @@ package com.rratliff.chaptertracker;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.rratliff.chaptertracker.View.BookDetail;
+
 @Entity
+@Table(name = "t_reading_record")
 public class ReadingRecord {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "reading_record_id")
+	@JsonView(BookDetail.class)
 	private long id;
 
 	@ManyToOne
-	@NotNull
 	private Book book;
 
 	@NotNull
+	@JsonView(BookDetail.class)
 	private Date date;
 
 	@Min(1)
+	@JsonView(BookDetail.class)
 	private int chapterNumber;
 
 	protected ReadingRecord() {
@@ -65,11 +74,5 @@ public class ReadingRecord {
 
 	public void setChapterNumber(int chapterNumber) {
 		this.chapterNumber = chapterNumber;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("ReadingRecord [id=%s, book=%s, date=%s, chapterNumber=%s]", id, book, date,
-				chapterNumber);
 	}
 }

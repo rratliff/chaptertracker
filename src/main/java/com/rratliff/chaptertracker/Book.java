@@ -1,38 +1,48 @@
 package com.rratliff.chaptertracker;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.rratliff.chaptertracker.View.BookDetail;
+import com.rratliff.chaptertracker.View.BookSummary;
 
 @Entity
+@Table(name = "t_book")
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(View.Summary.class)
+	@Column(name = "book_id")
+	@JsonView(BookSummary.class)
 	private long id;
 
 	@NotEmpty
-	@JsonView(View.Summary.class)
+	@JsonView(BookSummary.class)
 	private String name;
 
-	@JsonView(View.Summary.class)
+	@JsonView(BookSummary.class)
 	private int sequence;
 
 	@Min(1)
-	@JsonView(View.Summary.class)
+	@JsonView(BookSummary.class)
 	private int chapterCount;
 
-	@OneToMany
-	private List<ReadingRecord> readingRecords;
+	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonView(BookDetail.class)
+	private List<ReadingRecord> readingRecords = new ArrayList<ReadingRecord>();
 
 	protected Book() {
 	}
@@ -82,10 +92,4 @@ public class Book {
 	public void setReadingRecords(List<ReadingRecord> readingRecords) {
 		this.readingRecords = readingRecords;
 	}
-
-	@Override
-	public String toString() {
-		return String.format("Book [id=%s, name=%s, sequence=%s, chapterCount=%s]", id, name, sequence, chapterCount);
-	}
-
 }

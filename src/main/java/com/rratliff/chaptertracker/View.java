@@ -2,7 +2,10 @@ package com.rratliff.chaptertracker;
 
 public class View {
 
-	interface Summary {
+	interface BookSummary {
+	}
+
+	interface BookDetail extends BookSummary {
 	}
 
 }

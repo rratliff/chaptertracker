@@ -34,10 +34,4 @@ public class ReadingRecordController {
 		response.put("readingRecord", readingRecord);
 		return response;
 	}
-
-	@RequestMapping(method = RequestMethod.GET)
-	public Iterable<ReadingRecord> getReadingRecordsByBook(@PathVariable("bookId") Long bookId) {
-		return readingRecordRepository.findAllByBook(bookId);
-	}
-
 }
