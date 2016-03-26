@@ -5,7 +5,13 @@ public class View {
 	interface BookSummary {
 	}
 
-	interface BookDetail extends BookSummary {
+	interface CommonDetails extends BookSummary {
+	}
+
+	interface BookDetail extends CommonDetails {
+	}
+
+	interface ReadingRecordDetail extends CommonDetails {
 	}
 
 }

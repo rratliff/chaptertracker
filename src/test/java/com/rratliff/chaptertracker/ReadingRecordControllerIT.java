@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
@@ -60,6 +63,32 @@ public class ReadingRecordControllerIT {
 		Map<String, Object> readingRecord = (Map<String, Object>) readingRecords.get(0);
 		assertNotNull(readingRecord);
 		assertNotNull(readingRecord.get("date"));
+	}
+
+	@Test
+	public void testCreateReadingRecord_returnsReadingRecord() throws Exception {
+		Book book = new Book("Leviticus", 27, 3);
+		bookRepository.save(book);
+
+		Map<String, String> urlParams = new HashMap<>();
+		urlParams.put("id", Long.toString(book.getId()));
+
+		// Building the Request body data
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("date", new Date());
+		requestBody.put("chapterNumber", 1);
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> apiResponse = restTemplate
+				.postForObject("http://localhost:8888/book/{id}/readingRecord", httpEntity, HashMap.class, urlParams);
+
+		assertNotNull(apiResponse);
 	}
 
 }

@@ -13,7 +13,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.rratliff.chaptertracker.View.BookDetail;
+import com.rratliff.chaptertracker.View.CommonDetails;
+import com.rratliff.chaptertracker.View.ReadingRecordDetail;
 
 @Entity
 @Table(name = "t_reading_record")
@@ -21,18 +22,19 @@ public class ReadingRecord {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "reading_record_id")
-	@JsonView(BookDetail.class)
+	@JsonView(CommonDetails.class)
 	private long id;
 
 	@ManyToOne
+	@JsonView(ReadingRecordDetail.class)
 	private Book book;
 
 	@NotNull
-	@JsonView(BookDetail.class)
+	@JsonView(CommonDetails.class)
 	private Date date;
 
 	@Min(1)
-	@JsonView(BookDetail.class)
+	@JsonView(CommonDetails.class)
 	private int chapterNumber;
 
 	protected ReadingRecord() {

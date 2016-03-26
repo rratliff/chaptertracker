@@ -33,7 +33,6 @@ public class Book {
 	@JsonView(BookSummary.class)
 	private String name;
 
-	@JsonView(BookSummary.class)
 	private int sequence;
 
 	@Min(1)
