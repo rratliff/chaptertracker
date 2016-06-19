@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +29,16 @@ public class ReadingRecordController {
 	@RequestMapping(method = RequestMethod.POST)
 	@JsonView(ReadingRecordDetail.class)
 	public Map<String, Object> createReadingRecord(@PathVariable("bookId") Long bookId,
-			@Valid @RequestBody ReadingRecord readingRecord) {
+			@Valid @RequestBody ReadingRecord readingRecord, BindingResult result) {
 		Book book = bookRepository.findOne(bookId);
 		readingRecord.setBook(book);
+
+		ReadingRecordValidator rrValidator = new ReadingRecordValidator();
+		rrValidator.validate(readingRecord, result);
+
+		if (result.hasErrors()) {
+			throw new BadRequestException();
+		}
 
 		readingRecordRepository.save(readingRecord);
 		Map<String, Object> response = new LinkedHashMap<String, Object>();

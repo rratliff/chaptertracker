@@ -16,6 +16,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -89,6 +90,34 @@ public class ReadingRecordControllerIT {
 				.postForObject("http://localhost:8888/book/{id}/readingRecord", httpEntity, HashMap.class, urlParams);
 
 		assertNotNull(apiResponse);
+	}
+
+	@Test
+	public void testCreateReadingRecord_chapterNumberExceedsBook_returnsBadRequest() throws Exception {
+		Book book = new Book("Leviticus", 3, 27);
+		bookRepository.save(book);
+
+		Map<String, String> urlParams = new HashMap<>();
+		urlParams.put("id", Long.toString(book.getId()));
+
+		// Building the Request body data
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("date", new Date());
+		requestBody.put("chapterNumber", 28);
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> apiResponse = restTemplate
+				.postForObject("http://localhost:8888/book/{id}/readingRecord", httpEntity, HashMap.class, urlParams);
+
+		assertNotNull(apiResponse);
+		Integer status = (Integer) apiResponse.get("status");
+		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
 	}
 
 }
