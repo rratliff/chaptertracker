@@ -17,8 +17,10 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
@@ -81,13 +83,11 @@ public class BookControllerIT {
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>("", requestHeaders);
 
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/book", httpEntity,
-				Map.class);
+		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/book", HttpMethod.POST,
+				httpEntity, String.class);
 
 		assertNotNull(apiResponse);
-		Integer status = (Integer) apiResponse.get("status");
-		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
+		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
 	}
 
 	@Test
@@ -104,13 +104,11 @@ public class BookControllerIT {
 				requestHeaders);
 
 		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/book", httpEntity,
-				Map.class, Collections.emptyMap());
+		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/book", HttpMethod.POST,
+				httpEntity, String.class);
 
 		assertNotNull(apiResponse);
-		Integer status = (Integer) apiResponse.get("status");
-		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
+		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
 	}
 
 	@Test
