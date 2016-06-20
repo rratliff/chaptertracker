@@ -16,8 +16,10 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
@@ -111,13 +113,11 @@ public class ReadingRecordControllerIT {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
 
-		@SuppressWarnings("unchecked")
-		HashMap<String, Object> apiResponse = restTemplate
-				.postForObject("http://localhost:8888/book/{id}/readingRecord", httpEntity, HashMap.class, urlParams);
+		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/book/{id}/readingRecord",
+				HttpMethod.POST, httpEntity, String.class, urlParams);
 
 		assertNotNull(apiResponse);
-		Integer status = (Integer) apiResponse.get("status");
-		assertEquals(HttpStatus.BAD_REQUEST.value(), status.intValue());
+		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
 	}
 
 }
