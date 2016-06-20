@@ -154,12 +154,10 @@ public class BookControllerIT {
 		Map<String, String> params = new HashMap<>();
 		params.put("id", Long.toString(book.getId()));
 
-		@SuppressWarnings("unchecked")
-		HashMap<String, Object> apiResponse = restTemplate.getForObject("http://localhost:8888/book/{id}",
-				HashMap.class, params);
+		Book apiResponse = restTemplate.getForObject("http://localhost:8888/book/{id}", Book.class, params);
 
 		assertNotNull(apiResponse);
-		assertNotNull(apiResponse.get("readingRecords"));
+		assertNotNull(apiResponse.getReadingRecords());
 
 		// Clean up
 		bookRepository.delete(book);
