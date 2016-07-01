@@ -25,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -32,6 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles({ "test" })
 @WebIntegrationTest({ "server.port=8888" })
 public class BookControllerIT {
+
+	private static final String BOOK_RESOURCE = "http://localhost:8888/book";
+	private static final String BOOK_ID_RESOURCE = "http://localhost:8888/book/{id}";
 
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -43,21 +47,12 @@ public class BookControllerIT {
 	@Test
 	public void testCreateBook_withValidData_returnsSuccess() throws Exception {
 
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("name", "Book 1");
-		requestBody.put("chapterCount", 1);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
+		HttpEntity<String> httpEntity = createBookRequestBody(1);
 
 		// Invoking the API
 		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/book", httpEntity,
-				Map.class, Collections.emptyMap());
+		Map<String, Object> apiResponse = restTemplate.postForObject(BOOK_RESOURCE, httpEntity, Map.class,
+				Collections.emptyMap());
 
 		assertNotNull(apiResponse);
 
@@ -83,8 +78,8 @@ public class BookControllerIT {
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>("", requestHeaders);
 
-		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/book", HttpMethod.POST,
-				httpEntity, String.class);
+		ResponseEntity<String> apiResponse = restTemplate.exchange(BOOK_RESOURCE, HttpMethod.POST, httpEntity,
+				String.class);
 
 		assertNotNull(apiResponse);
 		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
@@ -92,23 +87,28 @@ public class BookControllerIT {
 
 	@Test
 	public void testCreateBook_withNegativeChapterCount_returnsBadRequest() throws Exception {
+		HttpEntity<String> httpEntity = createBookRequestBody(-1);
+
+		// Invoking the API
+		ResponseEntity<String> apiResponse = restTemplate.exchange(BOOK_RESOURCE, HttpMethod.POST, httpEntity,
+				String.class);
+
+		assertNotNull(apiResponse);
+		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
+	}
+
+	private HttpEntity<String> createBookRequestBody(int chapterCount) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("name", "Book 1");
-		requestBody.put("chapterCount", -1);
+		requestBody.put("chapterCount", chapterCount);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
-
-		// Invoking the API
-		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/book", HttpMethod.POST,
-				httpEntity, String.class);
-
-		assertNotNull(apiResponse);
-		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
+		return httpEntity;
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class BookControllerIT {
 		bookRepository.save(book);
 
 		@SuppressWarnings("unchecked")
-		List<Book> apiResponse = restTemplate.getForObject("http://localhost:8888/book", List.class);
+		List<Book> apiResponse = restTemplate.getForObject(BOOK_RESOURCE, List.class);
 
 		assertNotNull(apiResponse);
 		assertEquals(1, apiResponse.size());
@@ -132,7 +132,7 @@ public class BookControllerIT {
 		bookRepository.save(book);
 
 		@SuppressWarnings("unchecked")
-		List<HashMap<String, Object>> apiResponse = restTemplate.getForObject("http://localhost:8888/book", List.class);
+		List<HashMap<String, Object>> apiResponse = restTemplate.getForObject(BOOK_RESOURCE, List.class);
 
 		assertNotNull(apiResponse);
 		assertEquals(1, apiResponse.size());
@@ -152,7 +152,7 @@ public class BookControllerIT {
 		Map<String, String> params = new HashMap<>();
 		params.put("id", Long.toString(book.getId()));
 
-		Book apiResponse = restTemplate.getForObject("http://localhost:8888/book/{id}", Book.class, params);
+		Book apiResponse = restTemplate.getForObject(BOOK_ID_RESOURCE, Book.class, params);
 
 		assertNotNull(apiResponse);
 		assertNotNull(apiResponse.getReadingRecords());
