@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,11 @@ public class BookControllerIT {
 
 	private RestTemplate restTemplate = new TestRestTemplate();
 
+	@After
+	public void after() {
+		bookRepository.deleteAll();
+	}
+
 	@Test
 	public void testCreateBook_withValidData_returnsSuccess() throws Exception {
 
@@ -68,8 +74,6 @@ public class BookControllerIT {
 		// succeeded
 		Book bookFromDb = bookRepository.findOne(bookId.longValue());
 		assertEquals("Book 1", bookFromDb.getName());
-
-		bookRepository.delete(bookId.longValue());
 	}
 
 	@Test
@@ -97,6 +101,20 @@ public class BookControllerIT {
 		assertEquals(HttpStatus.BAD_REQUEST, apiResponse.getStatusCode());
 	}
 
+	@Test
+	public void createBookTwice_returnsServerError() throws Exception {
+		HttpEntity<String> httpEntity = createBookRequestBody(1);
+
+		ResponseEntity<String> apiResponse = restTemplate.exchange(BOOK_RESOURCE, HttpMethod.POST, httpEntity,
+				String.class);
+		assertNotNull(apiResponse);
+
+		ResponseEntity<String> secondApiResponse = restTemplate.exchange(BOOK_RESOURCE, HttpMethod.POST, httpEntity,
+				String.class);
+		assertNotNull(secondApiResponse);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, secondApiResponse.getStatusCode());
+	}
+
 	private HttpEntity<String> createBookRequestBody(int chapterCount) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -121,9 +139,6 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		assertEquals(1, apiResponse.size());
-
-		// Clean up
-		bookRepository.delete(book);
 	}
 
 	@Test
@@ -139,9 +154,6 @@ public class BookControllerIT {
 		HashMap<String, Object> responseBook = apiResponse.get(0);
 		assertEquals(book.getName(), responseBook.get("name"));
 		assertNull(responseBook.get("readingRecords"));
-
-		// Clean up
-		bookRepository.delete(book);
 	}
 
 	@Test
@@ -156,9 +168,6 @@ public class BookControllerIT {
 
 		assertNotNull(apiResponse);
 		assertNotNull(apiResponse.getReadingRecords());
-
-		// Clean up
-		bookRepository.delete(book);
 	}
 
 }
