@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -21,7 +22,8 @@ import com.rratliff.chaptertracker.View.BookDetail;
 import com.rratliff.chaptertracker.View.BookSummary;
 
 @Entity
-@Table(name = "t_book")
+@Table(name = "t_book", //
+		uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "chapterCount" }) })
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
